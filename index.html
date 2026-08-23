@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ritme">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Ritme</title>
+<style>
+  :root{
+    --surface-1:#fcfcfb; --page:#f4f3f0; --card:#ffffff;
+    --text-1:#0b0b0b; --text-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --c-slaap:#4a3aa7; --c-groente:#008300; --c-fruit:#e87ba4; --c-sport:#eb6834;
+    --c-slaap-soft:#e9e6f6; --c-groente-soft:#dceede; --c-fruit-soft:#fbe6ef; --c-sport-soft:#fce4da;
+    --good:#0ca30c;
+    --shadow:0 1px 2px rgba(11,11,11,.04),0 6px 20px rgba(11,11,11,.06);
+    --r:18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --surface-1:#1a1a19; --page:#0d0d0d; --card:#1c1c1b;
+      --text-1:#ffffff; --text-2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --c-slaap:#9085e9; --c-groente:#37a837; --c-fruit:#d55181; --c-sport:#d95926;
+      --c-slaap-soft:#26224a; --c-groente-soft:#12341a; --c-fruit-soft:#3a2130; --c-sport-soft:#3a2418;
+      --good:#0ca30c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.4);
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--page); color:var(--text-1);
+    line-height:1.4; -webkit-text-size-adjust:100%;
+    padding-bottom:calc(78px + env(safe-area-inset-bottom));
+  }
+  .app{max-width:520px;margin:0 auto;padding:0 16px}
+
+  /* Header */
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:calc(14px + env(safe-area-inset-top)) 0 8px;
+  }
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:conic-gradient(from 0deg,var(--c-slaap),var(--c-groente),var(--c-sport),var(--c-fruit),var(--c-slaap))}
+  .today-pill{font-size:13px;color:var(--text-2);font-weight:600}
+
+  h2.section{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:22px 4px 10px}
+
+  /* Date navigator */
+  .datenav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 14px}
+  .datenav .lbl{text-align:center;font-weight:700;font-size:17px;flex:1}
+  .datenav .sub{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:1px}
+  .navbtn{width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:var(--card);
+    color:var(--text-1);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+  .navbtn:disabled{opacity:.32;cursor:default}
+  .navbtn:active:not(:disabled){transform:scale(.94)}
+
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+    padding:16px 16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .emoji{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .card-title{font-weight:700;font-size:16px}
+  .card-hint{font-size:12px;color:var(--muted);margin-top:1px}
+  .accent-slaap .emoji{background:var(--c-slaap-soft)}
+  .accent-groente .emoji{background:var(--c-groente-soft)}
+  .accent-fruit .emoji{background:var(--c-fruit-soft)}
+  .accent-sport .emoji{background:var(--c-sport-soft)}
+
+  /* Big value + stepper */
+  .stepper{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .bigval{font-size:34px;font-weight:800;letter-spacing:-.02em;text-align:center;flex:1;font-variant-numeric:tabular-nums}
+  .bigval .u{font-size:16px;font-weight:600;color:var(--text-2);margin-left:3px}
+  .bigval.zero{color:var(--muted)}
+  .round{width:52px;height:52px;border-radius:50%;border:none;font-size:26px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex:0 0 auto;transition:transform .05s}
+  .round:active{transform:scale(.9)}
+  .round.minus{background:var(--baseline)}
+  .accent-slaap .round.plus{background:var(--c-slaap)} .accent-groente .round.plus{background:var(--c-groente)}
+  .accent-fruit .round.plus{background:var(--c-fruit)} .accent-sport .round.plus{background:var(--c-sport)}
+
+  /* two-line rows (groente/fruit) */
+  .subrow{display:flex;align-items:center;gap:12px;padding:10px 0}
+  .subrow+.subrow{border-top:1px solid var(--border)}
+  .subrow .name{flex:1;font-weight:600;font-size:15px}
+  .subrow .name small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+  .subval{min-width:56px;text-align:center;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+  .subval.zero{color:var(--muted)}
+  .round.sm{width:42px;height:42px;font-size:22px}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .chip{padding:9px 14px;border-radius:999px;border:1.5px solid var(--border);background:transparent;
+    color:var(--text-1);font-size:14px;font-weight:600;cursor:pointer;transition:transform .05s}
+  .chip:active{transform:scale(.95)}
+  .chip.on{border-color:transparent;color:#fff;background:var(--c-sport)}
+  .chip.on.zerochip{background:var(--muted)}
+  .fine{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px}
+  .fine .subval{min-width:96px;font-size:22px}
+
+  /* saved toast */
+  .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);
+    background:var(--text-1);color:var(--page);font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;display:flex;align-items:center;gap:6px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Overzicht */
+  .range{display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;margin:0 0 6px}
+  .range button{flex:1;border:none;background:transparent;color:var(--text-2);font-weight:600;font-size:14px;
+    padding:8px;border-radius:9px;cursor:pointer}
+  .range button.on{background:var(--surface-1);color:var(--text-1);box-shadow:var(--shadow)}
+
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+  .tile{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px}
+  .tile .k{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+  .tile .k i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .tile .v{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.02em}
+  .tile .v small{font-size:14px;font-weight:600;color:var(--text-2)}
+
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px 8px;margin-bottom:14px;box-shadow:var(--shadow);position:relative}
+  .chart-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 4px;margin-bottom:6px}
+  .chart-title{font-weight:700;font-size:15px}
+  .chart-legend{display:flex;gap:12px;font-size:12px;color:var(--text-2);font-weight:600}
+  .chart-legend span{display:flex;align-items:center;gap:5px}
+  .chart-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  svg.chart{width:100%;height:auto;display:block;touch-action:pan-y}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:30px 10px}
+  .tooltip{position:absolute;pointer-events:none;background:var(--text-1);color:var(--page);font-size:12px;font-weight:600;
+    padding:7px 10px;border-radius:10px;white-space:nowrap;opacity:0;transition:opacity .1s;z-index:20;transform:translate(-50%,-115%);box-shadow:var(--shadow)}
+  .tooltip .tt-d{color:var(--baseline);font-weight:600;margin-bottom:3px;font-size:11px}
+  .tooltip .tt-r{display:flex;align-items:center;gap:6px}
+  .tooltip .tt-r i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+  /* bottom nav */
+  nav.tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--border);
+    display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:40}
+  nav.tabbar button{flex:1;background:none;border:none;color:var(--muted);font-size:11px;font-weight:600;
+    display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:2px}
+  nav.tabbar button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  nav.tabbar button.on{color:var(--text-1)}
+  nav.tabbar button.on svg{stroke:var(--c-slaap)}
+
+  .hidden{display:none!important}
+  .foot{text-align:center;color:var(--muted);font-size:11px;padding:6px 0 4px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><span class="dot"></span>Ritme</div>
+    <div class="today-pill" id="headerDate"></div>
+  </header>
+
+  <!-- ========== VANDAAG ========== -->
+  <section id="view-vandaag">
+    <div class="datenav">
+      <button class="navbtn" id="prevDay" aria-label="Vorige dag">‹</button>
+      <div class="lbl"><span id="dateLabel">Vandaag</span><span class="sub" id="dateSub"></span></div>
+      <button class="navbtn" id="nextDay" aria-label="Volgende dag">›</button>
+    </div>
+
+    <!-- Slaap -->
+    <div class="card accent-slaap">
+      <div class="card-head">
+        <div class="emoji">😴</div>
+        <div><div class="card-title">Slaap</div><div class="card-hint">Streef naar 7–9 uur</div></div>
+      </div>
+      <div class="stepper">
+        <button class="round minus" data-step="slaap" data-d="-0.5">−</button>
+        <div class="bigval" id="val-slaap"></div>
+        <button class="round plus" data-step="slaap" data-d="0.5">+</button>
+      </div>
+    </div>
+
+    <!-- Groente & fruit -->
+    <div class="card accent-groente">
+      <div class="card-head">
+        <div class="emoji">🥦</div>
+        <div><div class="card-title">Groente &amp; fruit</div><div class="card-hint">Richtlijn: 5 porties groente · 2 stuks fruit</div></div>
+      </div>
+      <div class="subrow">
+        <div class="name">Groente <small>porties (opscheplepels)</small></div>
+        <button class="round sm minus" data-step="groente" data-d="-1">−</button>
+        <div class="subval" id="val-groente"></div>
+        <button class="round sm plus" data-step="groente" data-d="1" style="background:var(--c-groente)">+</button>
+      </div>
+      <div class="subrow">
+        <div class="name">Fruit <small>stuks</small></div>
+        <button class="round sm minus" data-step="fruit" data-d="-1">−</button>
+        <div class="subval" id="val-fruit"></div>
+        <button class="round sm plus" data-step="fruit" data-d="1" style="background:var(--c-fruit)">+</button>
+      </div>
+    </div>
+
+    <!-- Sport -->
+    <div class="card accent-sport">
+      <div class="card-head">
+        <div class="emoji">🏃</div>
+        <div><div class="card-title">Sport</div><div class="card-hint">Hoelang heb je bewogen?</div></div>
+      </div>
+      <div class="chips" id="sportChips"></div>
+      <div class="fine">
+        <button class="round sm minus" data-step="sport" data-d="-5">−</button>
+        <div class="subval" id="val-sport" style="min-width:120px"></div>
+        <button class="round sm plus" data-step="sport" data-d="5" style="background:var(--c-sport)">+</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== OVERZICHT ========== -->
+  <section id="view-overzicht" class="hidden">
+    <div class="range" id="rangeSel">
+      <button data-r="7" class="on">7 dagen</button>
+      <button data-r="14">14 dagen</button>
+      <button data-r="30">30 dagen</button>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="chart-card">
+      <div class="chart-head"><div class="chart-title">Slaap per dag</div><div class="chart-legend"><span><i style="background:var(--c-slaap)"></i>uren</span></div></div>
+      <div id="chart-slaap"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head"><div class="chart-title">Groente &amp; fruit per dag</div>
+        <div class="chart-legend"><span><i style="background:var(--c-groente)"></i>groente</span><span><i style="background:var(--c-fruit)"></i>fruit</span></div></div>
+      <div id="chart-eten"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head"><div class="chart-title">Sport per dag</div><div class="chart-legend"><span><i style="background:var(--c-sport)"></i>minuten</span></div></div>
+      <div id="chart-sport"></div>
+    </div>
+
+    <div class="foot">Je gegevens blijven op dit apparaat.</div>
+  </section>
+</div>
+
+<div class="toast" id="toast">✓ Opgeslagen</div>
+
+<nav class="tabbar">
+  <button id="tab-vandaag" class="on">
+    <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-2v9h-5v-6h-4v6H5v-9H3z"/></svg>
+    Vandaag
+  </button>
+  <button id="tab-overzicht">
+    <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    Overzicht
+  </button>
+</nav>
+
+<script>
+/* ---------- opslag ---------- */
+const KEY='ritme.v1';
+function load(){ try{return JSON.parse(localStorage.getItem(KEY))||{entries:{}}}catch(e){return {entries:{}}} }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+let state = load();
+
+/* ---------- datums ---------- */
+const WD=['zo','ma','di','wo','do','vr','za'];
+const WDlong=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const MO=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parse(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function addDays(s,n){const d=parse(s);d.setDate(d.getDate()+n);return ymd(d);}
+const TODAY=ymd(new Date());
+let selDate=TODAY;
+
+const nf=new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1});
+
+/* ---------- entries ---------- */
+function blank(){return {slaap:0,groente:0,fruit:0,sport:0};}
+function get(date){return Object.assign(blank(), state.entries[date]||{});}
+function hasEntry(date){return !!state.entries[date];}
+function setField(field,delta){
+  const e=get(selDate);
+  let v=e[field]+delta;
+  if(field==='slaap') v=Math.max(0,Math.min(16,v));
+  else if(field==='sport') v=Math.max(0,Math.min(300,v));
+  else v=Math.max(0,Math.min(30,v));
+  e[field]=Math.round(v*10)/10;
+  state.entries[selDate]=e; save(); renderToday(); showToast();
+}
+function setSport(v){ const e=get(selDate); e.sport=v; state.entries[selDate]=e; save(); renderToday(); showToast(); }
+
+/* ---------- toast ---------- */
+let toastT; const toastEl=document.getElementById('toast');
+function showToast(){ toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'),1100); }
+
+/* ---------- render VANDAAG ---------- */
+function renderToday(){
+  const e=get(selDate);
+  const vs=document.getElementById('val-slaap');
+  vs.innerHTML = e.slaap>0 ? nf.format(e.slaap)+'<span class="u">u</span>' : '0<span class="u">u</span>';
+  vs.classList.toggle('zero',e.slaap===0);
+  for(const f of ['groente','fruit']){
+    const el=document.getElementById('val-'+f); el.textContent=e[f]; el.classList.toggle('zero',e[f]===0);
+  }
+  const sp=document.getElementById('val-sport');
+  sp.textContent = e.sport>0 ? e.sport+' min' : 'Niet gesport';
+  sp.classList.toggle('zero',e.sport===0);
+  // chips
+  document.querySelectorAll('#sportChips .chip').forEach(c=>{
+    const v=+c.dataset.v;
+    let on = v===90 ? e.sport>=90 : e.sport===v;
+    c.classList.toggle('on',on);
+    c.classList.toggle('zerochip',v===0);
+  });
+  // datum labels
+  const d=parse(selDate);
+  let lbl;
+  if(selDate===TODAY) lbl='Vandaag';
+  else if(selDate===addDays(TODAY,-1)) lbl='Gisteren';
+  else lbl=WDlong[d.getDay()].charAt(0).toUpperCase()+WDlong[d.getDay()].slice(1);
+  document.getElementById('dateLabel').textContent=lbl;
+  document.getElementById('dateSub').textContent=d.getDate()+' '+MO[d.getMonth()]+' '+d.getFullYear();
+  document.getElementById('nextDay').disabled = selDate>=TODAY;
+}
+
+/* sport chips opbouwen */
+const SPORTS=[[0,'Niet gesport'],[15,'15'],[30,'30'],[45,'45'],[60,'60'],[90,'90+']];
+const chipWrap=document.getElementById('sportChips');
+SPORTS.forEach(([v,label])=>{
+  const b=document.createElement('button'); b.className='chip'; b.dataset.v=v; b.textContent=label;
+  b.onclick=()=>setSport(v); chipWrap.appendChild(b);
+});
+
+/* steppers */
+document.querySelectorAll('[data-step]').forEach(btn=>{
+  btn.onclick=()=>setField(btn.dataset.step, parseFloat(btn.dataset.d));
+});
+document.getElementById('prevDay').onclick=()=>{selDate=addDays(selDate,-1);renderToday();};
+document.getElementById('nextDay').onclick=()=>{if(selDate<TODAY){selDate=addDays(selDate,1);renderToday();}};
+
+/* ---------- OVERZICHT ---------- */
+let range=7;
+document.querySelectorAll('#rangeSel button').forEach(b=>{
+  b.onclick=()=>{range=+b.dataset.r; document.querySelectorAll('#rangeSel button').forEach(x=>x.classList.toggle('on',x===b)); renderOverzicht();};
+});
+
+function rangeDates(){
+  const arr=[]; for(let i=range-1;i>=0;i--) arr.push(addDays(TODAY,-i)); return arr;
+}
+
+function renderTiles(dates){
+  const filled=dates.filter(hasEntry);
+  const avg=(sel)=>{const v=filled.map(sel).filter(x=>x!=null); return v.length? v.reduce((a,b)=>a+b,0)/v.length : null;};
+  const slaapAvg=avg(d=>get(d).slaap>0?get(d).slaap:null);
+  const efAvg=avg(d=>{const e=get(d);return e.groente+e.fruit;});
+  const sportDays=filled.filter(d=>get(d).sport>0).length;
+  const sportTot=filled.reduce((a,d)=>a+get(d).sport,0);
+  const t=document.getElementById('tiles');
+  const fmt=(x,dec)=> x==null?'–':nf.format(Math.round(x*(dec?10:1))/(dec?10:1));
+  t.innerHTML=`
+    <div class="tile"><div class="k"><i style="background:var(--c-slaap)"></i>Gem. slaap</div><div class="v">${fmt(slaapAvg,1)}<small> u</small></div></div>
+    <div class="tile"><div class="k"><i style="background:var(--c-groente)"></i>Groente+fruit /dag</div><div class="v">${fmt(efAvg,1)}</div></div>
+    <div class="tile"><div class="k"><i style="background:var(--c-sport)"></i>Sportdagen</div><div class="v">${sportDays}<small> / ${dates.length}</small></div></div>
+    <div class="tile"><div class="k"><i style="background:var(--c-sport)"></i>Sport totaal</div><div class="v">${sportTot}<small> min</small></div></div>`;
+}
+
+function axisMax(v){
+  const t=Math.max(v,1)*1.12;
+  const cand=[2,3,4,5,6,8,10,12,15,20,30,40,50,60,75,90,100,120,150,180,210,240,300];
+  for(const c of cand) if(c>=t) return c;
+  return Math.ceil(t/60)*60;
+}
+
+/* generieke staafgrafiek. segs(date) -> [{v,color,name}] ; ref optioneel */
+function drawChart(mountId, dates, segsFn, opt){
+  const mount=document.getElementById(mountId);
+  mount.innerHTML='';
+  const anyData=dates.some(hasEntry);
+  if(!anyData){ mount.innerHTML='<div class="empty">Nog niks ingevuld in deze periode.</div>'; return; }
+
+  const VBW=680, VBH=210, L=34, R=10, T=14, B=26;
+  const plotW=VBW-L-R, plotH=VBH-T-B;
+  const n=dates.length, slot=plotW/n, bw=Math.min(30, slot*0.62);
+
+  // per dag segmenten + totaal
+  const cols=dates.map(d=>{ const segs= hasEntry(d)? segsFn(d):[]; const total=segs.reduce((a,s)=>a+s.v,0); return {d,segs,total}; });
+  const dataMax=Math.max(...cols.map(c=>c.total), opt.ref?opt.ref.value:0, 0);
+  const max=axisMax(dataMax);
+  const y=v=>T+plotH*(1-v/max);
+  const cx=i=>L+slot*i+slot/2;
+
+  let g='';
+  // gridlines + y labels (0, mid, max)
+  [0,max/2,max].forEach(gv=>{
+    const yy=y(gv);
+    g+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${VBW-R}" y2="${yy.toFixed(1)}" stroke="${gv===0?'var(--baseline)':'var(--grid)'}" stroke-width="1"/>`;
+    g+=`<text x="${L-6}" y="${yy+3.5}" text-anchor="end" font-size="10.5" fill="var(--muted)">${nf.format(Math.round(gv*10)/10)}</text>`;
+  });
+  // richtlijn-lijn
+  if(opt.ref && opt.ref.value<=max){
+    const yy=y(opt.ref.value);
+    g+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${VBW-R}" y2="${yy.toFixed(1)}" stroke="${opt.color}" stroke-width="1.5" stroke-dasharray="2 4" opacity=".7"/>`;
+    g+=`<text x="${VBW-R}" y="${yy-4}" text-anchor="end" font-size="9.5" font-weight="600" fill="${opt.color}" opacity=".85">${opt.ref.label}</text>`;
+  }
+  // staven
+  cols.forEach((c,i)=>{
+    if(!hasEntry(c.d)) return;
+    const x=cx(i)-bw/2;
+    if(c.total===0){ g+=`<circle cx="${cx(i).toFixed(1)}" cy="${y(0)}" r="2" fill="var(--baseline)"/>`; return; }
+    let acc=0;
+    c.segs.forEach(s=>{
+      if(s.v<=0) return;
+      const h=plotH*s.v/max; const yTop=y(acc+s.v); acc+=s.v;
+      const isTop = Math.abs(acc-c.total)<1e-6;
+      const rx = isTop?Math.min(4,bw/2):0;
+      g+=`<path d="${roundTopRect(x,yTop,bw,h,rx)}" fill="${s.color}"/>`;
+      if(!isTop) g+=`<rect x="${x}" y="${(yTop+h-1).toFixed(1)}" width="${bw}" height="2" fill="var(--card)"/>`;
+    });
+  });
+  // x labels
+  const every = n<=14?1:(n<=21?3:5);
+  cols.forEach((c,i)=>{
+    if(i%every!==0 && i!==n-1) return;
+    const dd=parse(c.d);
+    const txt = n<=7 ? WD[dd.getDay()] : String(dd.getDate());
+    g+=`<text x="${cx(i).toFixed(1)}" y="${VBH-9}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${txt}</text>`;
+  });
+
+  const svg=`<svg class="chart" viewBox="0 0 ${VBW} ${VBH}" preserveAspectRatio="xMidYMid meet" role="img">${g}</svg>`;
+  mount.insertAdjacentHTML('beforeend', svg);
+  const tip=document.createElement('div'); tip.className='tooltip'; mount.appendChild(tip);
+  attachTip(mount, mount.querySelector('svg'), cols, {L,slot,VBW,cx,unit:opt.unit,names:opt.names});
+}
+
+function roundTopRect(x,y,w,h,r){
+  r=Math.max(0,Math.min(r,h));
+  return `M${x} ${(y+h).toFixed(1)} L${x} ${(y+r).toFixed(1)} Q${x} ${y} ${x+r} ${y} L${(x+w-r).toFixed(1)} ${y} Q${(x+w)} ${y} ${(x+w)} ${(y+r).toFixed(1)} L${(x+w)} ${(y+h).toFixed(1)} Z`;
+}
+
+function attachTip(mount, svg, cols, o){
+  function show(clientX){
+    const rect=svg.getBoundingClientRect();
+    const ux=(clientX-rect.left)/rect.width*o.VBW;
+    let i=Math.round((ux-o.L-o.slot/2)/o.slot);
+    i=Math.max(0,Math.min(cols.length-1,i));
+    const c=cols[i];
+    if(!hasEntry(c.d)){ tipHide(); return; }
+    const dd=parse(c.d);
+    let rows=c.segs.map(s=>`<div class="tt-r"><i style="background:${s.color}"></i>${s.name} ${nf.format(s.v)}</div>`).join('');
+    if(c.segs.length>1) rows+=`<div class="tt-r" style="opacity:.75">totaal ${nf.format(c.total)}</div>`;
+    if(c.segs.length===1) rows=`<div class="tt-r"><i style="background:${c.segs[0].color}"></i>${nf.format(c.total)} ${o.unit}</div>`;
+    const tip=mount.querySelector('.tooltip');
+    tip.innerHTML=`<div class="tt-d">${WD[dd.getDay()]} ${dd.getDate()} ${MO[dd.getMonth()]}</div>${rows}`;
+    const cxpx=rect.left - mount.getBoundingClientRect().left + o.cx(i)/o.VBW*rect.width;
+    const toppx=rect.top - mount.getBoundingClientRect().top;
+    tip.style.left=cxpx+'px'; tip.style.top=(toppx+18)+'px'; tip.style.opacity='1';
+  }
+  function tipHide(){ const tip=mount.querySelector('.tooltip'); if(tip) tip.style.opacity='0'; }
+  svg.addEventListener('pointermove',e=>{e.preventDefault();show(e.clientX);});
+  svg.addEventListener('pointerdown',e=>{show(e.clientX);});
+  svg.addEventListener('pointerleave',tipHide);
+  svg.addEventListener('pointerup',tipHide);
+}
+
+function renderOverzicht(){
+  const dates=rangeDates();
+  renderTiles(dates);
+  const cs=getComputedStyle(document.documentElement);
+  const col=n=>cs.getPropertyValue(n).trim();
+  drawChart('chart-slaap', dates, d=>[{v:get(d).slaap,color:col('--c-slaap'),name:'slaap'}],
+    {unit:'u', color:col('--c-slaap'), ref:{value:8,label:'8u'}});
+  drawChart('chart-eten', dates, d=>{const e=get(d);return [
+      {v:e.groente,color:col('--c-groente'),name:'groente'},
+      {v:e.fruit,color:col('--c-fruit'),name:'fruit'}];},
+    {unit:'', color:col('--c-groente'), ref:{value:7,label:'richtlijn 7'}, names:['groente','fruit']});
+  drawChart('chart-sport', dates, d=>[{v:get(d).sport,color:col('--c-sport'),name:'sport'}],
+    {unit:'min', color:col('--c-sport'), ref:{value:30,label:'30 min'}});
+}
+
+/* ---------- navigatie ---------- */
+function switchView(v){
+  document.getElementById('view-vandaag').classList.toggle('hidden',v!=='vandaag');
+  document.getElementById('view-overzicht').classList.toggle('hidden',v!=='overzicht');
+  document.getElementById('tab-vandaag').classList.toggle('on',v==='vandaag');
+  document.getElementById('tab-overzicht').classList.toggle('on',v==='overzicht');
+  if(v==='overzicht') renderOverzicht(); else renderToday();
+  window.scrollTo(0,0);
+}
+document.getElementById('tab-vandaag').onclick=()=>switchView('vandaag');
+document.getElementById('tab-overzicht').onclick=()=>switchView('overzicht');
+
+/* ---------- start ---------- */
+(function(){const d=new Date();document.getElementById('headerDate').textContent=WD[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()];})();
+renderToday();
+window.addEventListener('resize',()=>{ if(!document.getElementById('view-overzicht').classList.contains('hidden')) renderOverzicht(); });
+
+/* PWA service worker (stil falen als offline-cache nog niet bestaat) */
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+</body>
+</html>
