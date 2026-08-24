@@ -1,4 +1,4 @@
-const CACHE = 'ritme-20260824140356';
+const CACHE = 'ritme-20260824160446';
 const ASSETS = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

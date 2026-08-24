@@ -151,7 +151,14 @@
   nav.tabbar button.on{color:var(--green)}
 
   .hidden{display:none!important}
-  .foot{text-align:center;color:var(--muted);font-size:11px;padding:6px 0 4px}
+  .foot{text-align:center;color:var(--muted);font-size:11px;padding:6px 8px 4px;line-height:1.5}
+  .backup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;box-shadow:var(--shadow)}
+  .backup-txt{font-size:13px;color:var(--text-2);margin:0 0 13px;line-height:1.5}
+  .backup-btns{display:flex;gap:10px}
+  .btn{flex:1;border-radius:12px;padding:12px 10px;font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:transform .05s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--green);color:#fff;box-shadow:0 3px 8px rgba(31,157,99,.28)}
+  .btn.ghost{background:transparent;color:var(--text-1);border-color:var(--border)}
   .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);
     background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:9px 17px;border-radius:999px;
     opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;box-shadow:0 6px 18px rgba(31,157,99,.4)}
@@ -260,7 +267,16 @@
       <div class="chart-head"><div class="chart-title">Sport per dag</div><div class="chart-legend"><span><i style="background:var(--c-sport)"></i>minuten</span></div></div>
       <div id="chart-sport"></div>
     </div>
-    <div class="foot">Je gegevens blijven op dit apparaat.</div>
+    <h2 class="sec">💾 Back-up</h2>
+    <div class="backup-card">
+      <p class="backup-txt">Je gegevens staan alleen op dit apparaat. Maak af en toe een back-up — dan kun je 'm terugzetten of overzetten naar een nieuwe telefoon.</p>
+      <div class="backup-btns">
+        <button class="btn primary" id="btnExport">⬇︎ Back-up maken</button>
+        <button class="btn ghost" id="btnImport">↩︎ Herstellen</button>
+      </div>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    </div>
+    <div class="foot">Op iPhone opent de back-up in het deelmenu → kies <b>Bewaar in Bestanden</b>.</div>
   </section>
 </div>
 
@@ -314,7 +330,7 @@ function setSport(v){ const e=get(selDate); e.sport=v; state.entries[selDate]=e;
 
 /* ---------- toast ---------- */
 let toastT; const toastEl=document.getElementById('toast');
-function showToast(){ toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'),1000); }
+function showToast(msg){ toastEl.textContent=msg||'✓ Opgeslagen'; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'),1300); }
 
 /* ---------- voortgang & streak ---------- */
 function dayProgress(date){
@@ -463,6 +479,47 @@ function switchView(v){
 }
 document.getElementById('tab-vandaag').onclick=()=>switchView('vandaag');
 document.getElementById('tab-overzicht').onclick=()=>switchView('overzicht');
+
+/* ---------- back-up ---------- */
+async function exportBackup(){
+  const name='ritme-backup-'+TODAY+'.json';
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const file=new File([blob],name,{type:'application/json'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title:'Ritme back-up'}); return; }
+    catch(e){ if(e && e.name==='AbortError') return; }
+  }
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  showToast('Back-up gemaakt');
+}
+function importBackup(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    let obj; try{ obj=JSON.parse(reader.result); }catch(e){ obj=null; }
+    if(!obj || typeof obj!=='object' || !obj.entries || typeof obj.entries!=='object'){
+      alert('Dit lijkt geen geldig Ritme back-up-bestand.'); return;
+    }
+    const clean={};
+    for(const [k,v] of Object.entries(obj.entries)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(k) || !v || typeof v!=='object') continue;
+      clean[k]={slaap:Number(v.slaap)||0, groente:Number(v.groente)||0, fruit:Number(v.fruit)||0, sport:Number(v.sport)||0};
+    }
+    const days=Object.keys(clean).length;
+    if(!days){ alert('Geen dagen gevonden in dit bestand.'); return; }
+    if(!confirm('Back-up gevonden met '+days+' dag(en).\n\nSamenvoegen met je huidige gegevens? Dagen met dezelfde datum worden vervangen door de back-up; de rest blijft staan.')) return;
+    state.entries=Object.assign({}, state.entries, clean);
+    save(); renderToday();
+    if(!document.getElementById('view-overzicht').classList.contains('hidden')) renderOverzicht();
+    showToast('Hersteld ✓');
+  };
+  reader.readAsText(file);
+}
+document.getElementById('btnExport').onclick=exportBackup;
+document.getElementById('btnImport').onclick=()=>document.getElementById('fileImport').click();
+document.getElementById('fileImport').onchange=function(){ if(this.files && this.files[0]) importBackup(this.files[0]); this.value=''; };
 
 /* ---------- start ---------- */
 renderToday();
