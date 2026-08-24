@@ -1,1 +1,8 @@
 .DS_Store
+
+# referentie-afbeeldingen (niet publiceren)
+*.JPG
+*.jpg
+*.jpeg
+*.heic
+*.HEIC
