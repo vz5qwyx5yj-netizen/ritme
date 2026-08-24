@@ -159,6 +159,29 @@
   .btn:active{transform:scale(.97)}
   .btn.primary{background:var(--green);color:#fff;box-shadow:0 3px 8px rgba(31,157,99,.28)}
   .btn.ghost{background:transparent;color:var(--text-1);border-color:var(--border)}
+
+  /* dienst-kiezer */
+  .dienst-strip{margin:0 0 16px}
+  .dienst-label{font-size:12.5px;font-weight:700;color:var(--text-2);margin:0 4px 8px}
+  .dienst-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .dchip{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:9px 3px 8px;text-align:center;
+    font-weight:700;font-size:12px;color:var(--text-1);cursor:pointer;box-shadow:var(--shadow);transition:transform .05s;line-height:1.2}
+  .dchip:active{transform:scale(.95)}
+  .dchip .e{font-size:19px;display:block;margin-bottom:3px}
+  .dchip.on{background:var(--green);color:#fff;border-color:transparent}
+  .dchip.suggest{border-style:dashed;border-color:var(--green);color:var(--green)}
+
+  /* per dienst */
+  .shift-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:4px 14px 12px;box-shadow:var(--shadow)}
+  .shift-row{display:grid;grid-template-columns:1.7fr .77fr .77fr .77fr;align-items:center;gap:6px;padding:9px 0;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+  .shift-row+.shift-row{border-top:1px solid var(--border)}
+  .shift-row span:not(.s-name){text-align:right}
+  .shift-row.head{font-size:11px;color:var(--muted);font-weight:700;padding:9px 0 3px}
+  .s-name{display:flex;align-items:center;gap:6px;font-weight:800;font-size:14px}
+  .s-name i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .s-name small{color:var(--muted);font-weight:600;font-size:11px;margin-left:1px}
+  .shift-insight{margin-top:10px;padding:11px 13px;background:var(--green-tint);border-radius:12px;font-size:13px;font-weight:600;line-height:1.45;color:var(--text-1)}
+  .shift-empty{padding:16px 6px;color:var(--muted);font-size:13.5px;line-height:1.55;text-align:center}
   .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);
     background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:9px 17px;border-radius:999px;
     opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;box-shadow:0 6px 18px rgba(31,157,99,.4)}
@@ -193,6 +216,11 @@
         <div class="progress-top"><span>Dagelijkse voortgang</span><b id="progPct">0% voltooid</b></div>
         <div class="track"><div class="fill" id="progFill" style="width:0%"></div></div>
       </div>
+    </div>
+
+    <div class="dienst-strip">
+      <div class="dienst-label" id="dienstLabel">Welke dienst draai je vandaag?</div>
+      <div class="dienst-chips" id="dienstChips"></div>
     </div>
 
     <div class="card slaap" id="card-slaap">
@@ -254,6 +282,9 @@
 
     <div class="tiles" id="tiles"></div>
 
+    <h2 class="sec">🗓️ Per dienst</h2>
+    <div id="shiftBreak"></div>
+
     <div class="chart-card">
       <div class="chart-head"><div class="chart-title">Slaap per dag</div><div class="chart-legend"><span><i style="background:var(--c-slaap)"></i>uren</span></div></div>
       <div id="chart-slaap"></div>
@@ -312,11 +343,19 @@ const TODAY=ymd(new Date());
 let selDate=TODAY;
 const nf=new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1});
 
-/* ---------- doelen ---------- */
+/* ---------- doelen & diensten ---------- */
 const GOAL={slaap:7,groente:5,fruit:2,sport:30};
+const SHIFTS=[
+  {key:'ochtend',label:'Ochtend',emoji:'🌅',color:'#f4a63c',phrase:'ochtenddiensten'},
+  {key:'middag', label:'Middag', emoji:'☀️',color:'#e0a400',phrase:'middagdiensten'},
+  {key:'nacht',  label:'Nacht',  emoji:'🌙',color:'#5b6ee1',phrase:'nachtdiensten'},
+  {key:'vrij',   label:'Vrij',   emoji:'🏖️',color:'#1f9d63',phrase:'vrije dagen'},
+];
+const SHIFT_KEYS=SHIFTS.map(s=>s.key);
+function suggestedShift(){const h=new Date().getHours(); if(h>=6&&h<14)return'ochtend'; if(h>=14&&h<22)return'middag'; return'nacht';}
 
 /* ---------- entries ---------- */
-function blank(){return {slaap:0,groente:0,fruit:0,sport:0};}
+function blank(){return {slaap:0,groente:0,fruit:0,sport:0,dienst:''};}
 function get(date){return Object.assign(blank(), state.entries[date]||{});}
 function hasEntry(date){return !!state.entries[date];}
 function setField(field,delta){
@@ -327,6 +366,7 @@ function setField(field,delta){
   e[field]=Math.round(v*10)/10; state.entries[selDate]=e; save(); renderToday(); showToast();
 }
 function setSport(v){ const e=get(selDate); e.sport=v; state.entries[selDate]=e; save(); renderToday(); showToast(); }
+function setDienst(k){ const e=get(selDate); e.dienst=(e.dienst===k?'':k); state.entries[selDate]=e; save(); renderToday(); showToast(); }
 
 /* ---------- toast ---------- */
 let toastT; const toastEl=document.getElementById('toast');
@@ -360,6 +400,11 @@ function renderToday(){
   const sp=document.getElementById('val-sport'); sp.textContent = e.sport>0 ? e.sport+' min' : 'Niet gesport'; sp.classList.toggle('zero',e.sport===0);
   document.querySelectorAll('#sportChips .chip').forEach(c=>{const v=+c.dataset.v; c.classList.toggle('on', v===90?e.sport>=90:e.sport===v); c.classList.toggle('zerochip',v===0);});
 
+  // dienst
+  const sug=(selDate===TODAY && !e.dienst)?suggestedShift():null;
+  document.querySelectorAll('#dienstChips .dchip').forEach(c=>{c.classList.toggle('on',e.dienst===c.dataset.k);c.classList.toggle('suggest',!e.dienst&&sug===c.dataset.k);});
+  document.getElementById('dienstLabel').textContent = selDate===TODAY?'Welke dienst draai je vandaag?':'Welke dienst was dit?';
+
   // vinkjes
   document.getElementById('card-slaap').classList.toggle('done', e.slaap>=GOAL.slaap);
   document.getElementById('card-eten').classList.toggle('done', e.groente>=GOAL.groente && e.fruit>=GOAL.fruit);
@@ -389,6 +434,8 @@ function renderToday(){
 const SPORTS=[[0,'Niet gesport'],[15,'15'],[30,'30'],[45,'45'],[60,'60'],[90,'90+']];
 const chipWrap=document.getElementById('sportChips');
 SPORTS.forEach(([v,label])=>{const b=document.createElement('button');b.className='chip';b.dataset.v=v;b.textContent=label;b.onclick=()=>setSport(v);chipWrap.appendChild(b);});
+const dienstWrap=document.getElementById('dienstChips');
+SHIFTS.forEach(s=>{const b=document.createElement('button');b.className='dchip';b.dataset.k=s.key;b.innerHTML='<span class="e">'+s.emoji+'</span>'+s.label;b.onclick=()=>setDienst(s.key);dienstWrap.appendChild(b);});
 document.querySelectorAll('[data-step]').forEach(btn=>{btn.onclick=()=>setField(btn.dataset.step, parseFloat(btn.dataset.d));});
 document.getElementById('prevDay').onclick=()=>{selDate=addDays(selDate,-1);renderToday();};
 document.getElementById('nextDay').onclick=()=>{if(selDate<TODAY){selDate=addDays(selDate,1);renderToday();}};
@@ -460,8 +507,26 @@ function attachTip(mount,svg,cols,o){
   svg.addEventListener('pointerdown',e=>show(e.clientX));
   svg.addEventListener('pointerleave',hide); svg.addEventListener('pointerup',hide);
 }
+function renderShiftBreakdown(dates){
+  const mount=document.getElementById('shiftBreak');
+  const st={}; SHIFTS.forEach(s=>st[s.key]={n:0,slaapSum:0,slaapN:0,ef:0,sport:0});
+  dates.forEach(d=>{ if(!hasEntry(d))return; const e=get(d); if(!st[e.dienst])return; const s=st[e.dienst];
+    s.n++; if(e.slaap>0){s.slaapSum+=e.slaap;s.slaapN++;} s.ef+=e.groente+e.fruit; s.sport+=e.sport; });
+  const rows=SHIFTS.filter(s=>st[s.key].n>0);
+  if(!rows.length){ mount.innerHTML='<div class="shift-card"><div class="shift-empty">Tag je diensten op het <b>Vandaag</b>-scherm (🌅 ☀️ 🌙 🏖️) om hier te zien hoe je slaap, eten en sport per dienst verschillen.</div></div>'; return; }
+  let html='<div class="shift-card"><div class="shift-row head"><span>&nbsp;</span><span>slaap</span><span>eten</span><span>sport</span></div>';
+  rows.forEach(s=>{ const d=st[s.key], slaapAvg=d.slaapN?d.slaapSum/d.slaapN:null;
+    html+=`<div class="shift-row"><span class="s-name"><i style="background:${s.color}"></i>${s.emoji} ${s.label}<small>${d.n} dg</small></span>`
+      +`<span>${slaapAvg==null?'–':nf.format(Math.round(slaapAvg*10)/10)+'u'}</span>`
+      +`<span>${nf.format(Math.round(d.ef/d.n*10)/10)}</span>`
+      +`<span>${Math.round(d.sport/d.n)}m</span></div>`; });
+  const ws=rows.filter(s=>st[s.key].slaapN>0).map(s=>({s,avg:st[s.key].slaapSum/st[s.key].slaapN}));
+  if(ws.length>=2){ ws.sort((a,b)=>a.avg-b.avg); const lo=ws[0],hi=ws[ws.length-1],diff=hi.avg-lo.avg;
+    if(diff>=0.3) html+=`<div class="shift-insight">💡 Op ${lo.s.phrase} slaap je gemiddeld <b>${nf.format(Math.round(diff*10)/10)} u minder</b> dan op ${hi.s.phrase}.</div>`; }
+  mount.innerHTML=html+'</div>';
+}
 function renderOverzicht(){
-  const dates=rangeDates(); renderTiles(dates);
+  const dates=rangeDates(); renderTiles(dates); renderShiftBreakdown(dates);
   const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim();
   drawChart('chart-slaap',dates,d=>[{v:get(d).slaap,color:col('--c-slaap'),name:'slaap'}],{unit:'u',color:col('--c-slaap'),ref:{value:8,label:'8u'}});
   drawChart('chart-eten',dates,d=>{const e=get(d);return[{v:e.groente,color:col('--c-groente'),name:'groente'},{v:e.fruit,color:col('--c-fruit'),name:'fruit'}];},{unit:'',color:col('--c-groente'),ref:{value:7,label:'richtlijn 7'}});
@@ -505,7 +570,7 @@ function importBackup(file){
     const clean={};
     for(const [k,v] of Object.entries(obj.entries)){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(k) || !v || typeof v!=='object') continue;
-      clean[k]={slaap:Number(v.slaap)||0, groente:Number(v.groente)||0, fruit:Number(v.fruit)||0, sport:Number(v.sport)||0};
+      clean[k]={slaap:Number(v.slaap)||0, groente:Number(v.groente)||0, fruit:Number(v.fruit)||0, sport:Number(v.sport)||0, dienst:SHIFT_KEYS.includes(v.dienst)?v.dienst:''};
     }
     const days=Object.keys(clean).length;
     if(!days){ alert('Geen dagen gevonden in dit bestand.'); return; }
