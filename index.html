@@ -11,6 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Ritme</title>
+<link rel="stylesheet" href="workout.css">
 <style>
   :root{
     --bg:linear-gradient(180deg,#c9edd6 0%,#dcefe4 42%,#e7ecf8 100%);
@@ -268,10 +269,12 @@
         <div class="subval" id="val-sport"></div>
         <button class="round sm plus" data-step="sport" data-d="5">+</button>
       </div>
+      <button class="workout-launch" id="open-workout"><span aria-hidden="true">↗</span><span>Core workout<small>5 of 10 minuten · zonder gewichten</small></span><span aria-hidden="true">›</span></button>
     </div>
   </section>
 
   <!-- ===== OVERZICHT ===== -->
+  <section id="view-workout" class="hidden" aria-label="Core workout"><div id="workout-root"></div></section>
   <section id="view-overzicht" class="hidden">
     <h2 class="sec">📈 Jouw ritme</h2>
     <div class="range" id="rangeSel">
@@ -321,6 +324,10 @@
   <button id="tab-overzicht">
     <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
     Overzicht
+  </button>
+  <button id="tab-workout">
+    <svg viewBox="0 0 24 24"><path d="m8 4-4 4m16 8-4 4M6 6l12 12M3 5l2-2m14 18 2-2M3 9l6-6m6 18 6-6"/></svg>
+    Workout
   </button>
 </nav>
 
@@ -537,13 +544,18 @@ function renderOverzicht(){
 function switchView(v){
   document.getElementById('view-vandaag').classList.toggle('hidden',v!=='vandaag');
   document.getElementById('view-overzicht').classList.toggle('hidden',v!=='overzicht');
+  document.getElementById('view-workout').classList.toggle('hidden',v!=='workout');
   document.getElementById('tab-vandaag').classList.toggle('on',v==='vandaag');
   document.getElementById('tab-overzicht').classList.toggle('on',v==='overzicht');
+  document.getElementById('tab-workout').classList.toggle('on',v==='workout');
+  if(window.RitmeWorkout) window.RitmeWorkout.setVisible(v==='workout');
   if(v==='overzicht') renderOverzicht(); else renderToday();
   window.scrollTo(0,0);
 }
 document.getElementById('tab-vandaag').onclick=()=>switchView('vandaag');
 document.getElementById('tab-overzicht').onclick=()=>switchView('overzicht');
+document.getElementById('tab-workout').onclick=()=>switchView('workout');
+document.getElementById('open-workout').onclick=()=>switchView('workout');
 
 /* ---------- back-up ---------- */
 async function exportBackup(){
@@ -571,6 +583,7 @@ function importBackup(file){
     for(const [k,v] of Object.entries(obj.entries)){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(k) || !v || typeof v!=='object') continue;
       clean[k]={slaap:Number(v.slaap)||0, groente:Number(v.groente)||0, fruit:Number(v.fruit)||0, sport:Number(v.sport)||0, dienst:SHIFT_KEYS.includes(v.dienst)?v.dienst:''};
+      if(Array.isArray(v.workouts)) clean[k].workouts=v.workouts.filter(id=>typeof id==='string' && id.length<100);
     }
     const days=Object.keys(clean).length;
     if(!days){ alert('Geen dagen gevonden in dit bestand.'); return; }
@@ -590,6 +603,20 @@ document.getElementById('fileImport').onchange=function(){ if(this.files && this
 renderToday();
 window.addEventListener('resize',()=>{if(!document.getElementById('view-overzicht').classList.contains('hidden'))renderOverzicht();});
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+<script src="workout.js"></script>
+<script>
+RitmeWorkout.init({
+  onLog({id,minutes,date}){
+    const entry=get(date);
+    if((entry.workouts||[]).includes(id)) return;
+    const previous=JSON.stringify(state);
+    state.entries[date]={...entry,sport:Math.min(300,entry.sport+minutes),workouts:[...(entry.workouts||[]),id]};
+    try{save();}catch(error){state=JSON.parse(previous);throw error;}
+    renderToday();
+  },
+  onHome(){selDate=ymd(new Date());switchView('vandaag');}
+});
 </script>
 </body>
 </html>
