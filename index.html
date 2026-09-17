@@ -602,7 +602,16 @@ document.getElementById('fileImport').onchange=function(){ if(this.files && this
 /* ---------- start ---------- */
 renderToday();
 window.addEventListener('resize',()=>{if(!document.getElementById('view-overzicht').classList.contains('hidden'))renderOverzicht();});
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update();                                   // meteen checken op een nieuwe versie
+    setInterval(()=>reg.update(), 60*60*1000);      // en daarna elk uur
+  }).catch(()=>{});
+  let herladen=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(herladen) return; herladen=true; location.reload();  // nieuwe versie actief -> verversen
+  });
+}
 </script>
 <script src="workout.js"></script>
 <script>
