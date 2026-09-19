@@ -1,7 +1,7 @@
 /* Local, offline workout player. No account or remote services required. */
 (() => {
   'use strict';
-  const STORAGE = 'ritme.workout.v1';
+  const STORAGE = 'workout.session.v1';
   const exercises = [
     {
       id:'hollow', name:'Hollow rocks', focus:'Diepe buikspieren', seconds:30,
@@ -34,8 +34,8 @@
       easier:'Zet je knieën op de mat of houd een hoge plank met beide handen aan de grond.'
     }
   ];
-  let root, options, selected=5, session=null, timer=null, lastTick=0, lastPersist=0;
-  let visible=false, animationOn=true, wakeLock=null, preview=null, exitDialog=null;
+  let root, selected=5, session=null, timer=null, lastTick=0, lastPersist=0;
+  let visible=true, animationOn=true, wakeLock=null, preview=null, exitDialog=null;
   const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   const byId=id=>exercises.find(ex=>ex.id===id);
   const time=seconds=>`${Math.floor(Math.max(0,seconds)/60)}:${String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0')}`;
@@ -68,7 +68,7 @@
       if(!Number.isInteger(s.index) || s.index<0 || s.index>=stages.length || !Number.isFinite(s.elapsed) || s.elapsed<0 || s.elapsed>stages[s.index].seconds) return;
       if(!['running','paused','complete'].includes(s.status)) return;
       if(s.status==='complete' && (s.index!==stages.length-1 || s.elapsed!==stages[s.index].seconds || !/^\d{4}-\d{2}-\d{2}$/.test(s.date))) return;
-      session={id:s.id,minutes:s.minutes,index:s.index,elapsed:s.elapsed,status:s.status==='complete'?'complete':'paused',date:s.date,logged:s.logged===true};
+      session={id:s.id,minutes:s.minutes,index:s.index,elapsed:s.elapsed,status:s.status==='complete'?'complete':'paused',date:s.date};
       selected=s.minutes;
     }catch(_){/* Ignore incomplete or old state. */}
   }
@@ -88,7 +88,7 @@
 
   function renderMenu(){
     root.innerHTML=`<div class="wk">
-      <div class="wk-topline">Jouw moment <span>Ritme / workout</span></div>
+      <div class="wk-topline">Jouw moment <span>Workout / core</span></div>
       <div class="wk-hero">${sprite('hollow')}<div class="wk-stamp">CALISTHENICS · CORE</div><div class="wk-hero-copy"><h1>STERK VANUIT<br>JE <em>CORE.</em></h1><p>Je eigen kracht. Een paar minuten voor jezelf.</p></div></div>
       <div class="wk-content">
         ${session?`<div class="wk-resume"><p>${session.status==='complete'?'Je vorige workout is afgerond.':`Je workout van ${session.minutes} minuten staat op pauze.`}</p><button class="wk-primary" data-action="resume">${session.status==='complete'?'Bekijk je resultaat':'Verder met je workout'}</button><button class="wk-link" data-action="discard">${session.status==='complete'?'Nieuwe workout kiezen':'Workout beëindigen'}</button></div>`:''}
@@ -164,7 +164,7 @@
   }
   function start(){
     if(session)return;
-    session={id:window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,minutes:selected,index:0,elapsed:0,status:'paused',logged:false};
+    session={id:window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,minutes:selected,index:0,elapsed:0,status:'paused'};
     animationOn=!reducedMotion.matches;run();focusHeading();window.scrollTo(0,0);
   }
   function pause(accountTime=true){
@@ -178,7 +178,7 @@
     stopInterval();persist();renderComplete();focusHeading();
   }
   function renderComplete(){
-    root.innerHTML=`<div class="wk wk-complete"><div class="wk-done-icon" aria-hidden="true">✓</div><div class="wk-eyebrow">Workout afgerond</div><h2>Goed voor je core.<br>Goed voor je ritme.</h2><p>Je hebt tijd gemaakt voor jezelf.<br>Dat mag je meenemen in je dag.</p><div class="wk-complete-stat">${session.minutes} <small>minuten</small></div><p>${session.minutes===10?'2 rondes':'1 ronde'} · 5 oefeningen · inclusief rust</p><button class="wk-primary" data-action="log" ${session.logged?'disabled':''}>${session.logged?'✓ Toegevoegd aan je sportminuten':`Voeg ${session.minutes} min toe aan Sport`}</button><p id="wk-save-message" role="status">${session.logged?'Je workout is opgeslagen.':'Wordt toegevoegd aan de dag waarop je deze workout afrondde.'}</p><button class="wk-secondary" data-action="home">Terug naar vandaag</button><button class="wk-link" data-action="new">Nieuwe workout</button></div>`;
+    root.innerHTML=`<div class="wk wk-complete"><div class="wk-done-icon" aria-hidden="true">✓</div><div class="wk-eyebrow">Workout afgerond</div><h2>Goed voor je core.<br>Tijd voor jezelf.</h2><p>Je hebt je workout afgerond.</p><div class="wk-complete-stat">${session.minutes} <small>minuten</small></div><p>${session.minutes===10?'2 rondes':'1 ronde'} · ${exercises.length} oefeningen · inclusief rust</p><p>Je sportminuten kun je zelf invullen in Ritme.</p><button class="wk-primary" data-action="new">Nieuwe workout</button></div>`;
   }
   function showPreview(id){
     const ex=byId(id);if(!ex)return;
@@ -189,7 +189,7 @@
   function confirmStop(){
     if(!session)return;
     pause();
-    exitDialog.innerHTML=`<div class="wk-dialog-copy"><h2 id="wk-stop-title">Workout stoppen?</h2><p>Je timer staat op pauze. Als je stopt, worden er geen sportminuten toegevoegd.</p><button class="wk-primary" data-continue>Verder met mijn workout</button><button class="wk-secondary" data-stop-confirm>Ja, stoppen</button></div>`;
+    exitDialog.innerHTML=`<div class="wk-dialog-copy"><h2 id="wk-stop-title">Workout stoppen?</h2><p>Je timer staat op pauze. Als je stopt, vervalt deze sessie.</p><button class="wk-primary" data-continue>Verder met mijn workout</button><button class="wk-secondary" data-stop-confirm>Ja, stoppen</button></div>`;
     exitDialog.showModal();
   }
   function discard(){stopInterval();session=null;persist();renderMenu();focusHeading();}
@@ -198,12 +198,6 @@
     const image=root.querySelector('.wk-scene .wk-sprite');
     image.classList.toggle('wk-animate',animationOn);image.classList.toggle('wk-motion-requested',animationOn);
     root.querySelector('[data-action=motion]').textContent=animationOn?'Ⅱ Voorbeeld stilzetten':'▶ Speel voorbeeld';
-  }
-  async function log(){
-    if(!session || session.status!=='complete' || session.logged)return;
-    const button=root.querySelector('[data-action=log]');button.disabled=true;
-    try{await options.onLog({id:session.id,minutes:session.minutes,date:session.date});session.logged=true;persist();renderComplete();}
-    catch(_){button.disabled=false;const message=root.querySelector('#wk-save-message');message.className='wk-error';message.textContent='Opslaan lukt niet. Maak ruimte vrij op je apparaat en probeer opnieuw.';}
   }
   function handleClick(event){
     const button=event.target.closest('button');if(!button || button.disabled)return;
@@ -216,14 +210,12 @@
       case 'resume':session.status==='complete'?renderComplete():renderPlayer();focusHeading();window.scrollTo(0,0);break;
       case 'discard':session.status==='complete'?discard():confirmStop();break;
       case 'motion':toggleAnimation();break;
-      case 'log':log();break;
-      case 'home':options.onHome();break;
       case 'new':discard();break;
     }
   }
-  window.RitmeWorkout={
-    init(config){
-      options=config;root=document.getElementById('workout-root');restore();renderMenu();root.addEventListener('click',handleClick);
+  window.Workout={
+    init(){
+      root=document.getElementById('workout-root');restore();renderMenu();root.addEventListener('click',handleClick);
       preview=document.createElement('dialog');preview.className='wk-dialog';preview.setAttribute('aria-labelledby','wk-preview-title');document.body.appendChild(preview);
       preview.addEventListener('click',event=>{
         if(event.target.closest('[data-close]'))preview.close();
@@ -238,6 +230,8 @@
       });
       document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
       window.addEventListener('pagehide',()=>pause());
+      window.addEventListener('pageshow',()=>{if(session?.status==='complete')renderComplete();else if(session)renderPlayer();});
+      if(session?.status==='complete')renderComplete();else if(session)renderPlayer();
     },
     setVisible(value){
       visible=value;

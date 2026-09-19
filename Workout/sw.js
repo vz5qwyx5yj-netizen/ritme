@@ -1,5 +1,5 @@
-const CACHE = 'ritme-fe4611ebf7eb6f42';
-const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./habits.js", "./habits.css"];
+const CACHE = 'workout-a92e2b80031ba5eb';
+const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./app.css", "./workout.js", "./workout.css", "./icons/icon.svg", "./assets/workout/hollow.png", "./assets/workout/pullup.png", "./assets/workout/crunch.png", "./assets/workout/handstand.png", "./assets/workout/taps-front.png"];
 const BASE = new URL('./', self.location.href);
 
 self.addEventListener('install', event => {
@@ -7,7 +7,7 @@ self.addEventListener('install', event => {
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(
-    keys.filter(key => key.startsWith('ritme-') && key !== CACHE).map(key => caches.delete(key))
+    keys.filter(key => key.startsWith('workout-') && key !== CACHE).map(key => caches.delete(key))
   )).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', event => {

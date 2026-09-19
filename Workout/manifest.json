@@ -1,0 +1,17 @@
+{
+  "id": "./index.html",
+  "name": "Workout",
+  "short_name": "Workout",
+  "description": "Core workouts met oefeningen, uitleg en een timer",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e8eadf",
+  "theme_color": "#263e2c",
+  "lang": "nl",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

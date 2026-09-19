@@ -6,3 +6,6 @@
 *.jpeg
 *.heic
 *.HEIC
+
+__pycache__/
+*.pyc

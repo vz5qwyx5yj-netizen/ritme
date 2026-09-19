@@ -1,0 +1,18 @@
+.workout-launch{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:13px 14px;border:0;border-radius:14px;background:#243e2c;color:#fff8df;text-align:left;text-decoration:none;font:750 15px system-ui}
+.workout-launch>span:first-child{font-size:25px;color:#efc45d}.workout-launch>span:nth-child(2){flex:1}.workout-launch small{display:block;font-size:11px;font-weight:500;opacity:.85;margin-top:3px}
+.card.habits{background:var(--card)}.card.habits .emoji{background:var(--green-tint)}
+.habit-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 0;cursor:pointer;border-top:1px solid var(--border)}
+.habit-row input{width:25px;height:25px;flex:0 0 25px;margin:0;accent-color:var(--green);cursor:pointer}
+.habit-row span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:15px;font-weight:700}
+.habit-row small{color:var(--text-2);font-size:11px;white-space:nowrap}
+.habit-row:has(input:checked) span{color:var(--green)}
+#habit-add{width:100%;margin-top:12px}#habit-form{margin-top:16px;border-top:1px solid var(--border);padding-top:16px}
+#habit-form label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+#habit-name{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--border);border-radius:12px;color:var(--text-1);background:var(--card)}
+#habit-start-note{font-size:12px;color:var(--text-2);margin:8px 0 12px}
+.habit-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding:10px 0}
+.habit-summary+.habit-summary{border-top:1px solid var(--border)}
+.habit-summary strong{overflow-wrap:anywhere;font-size:14px}.habit-summary span{font-size:12px;color:var(--text-2)}
+.habit-summary progress{grid-column:1/-1;width:100%;height:8px;border:0;border-radius:8px;overflow:hidden;accent-color:var(--green);background:var(--track)}
+.habit-summary progress::-webkit-progress-bar{background:var(--track)}.habit-summary progress::-webkit-progress-value{background:var(--green)}.habit-summary progress::-moz-progress-bar{background:var(--green)}
+:where(button,a,input):focus-visible{outline:3px solid var(--green);outline-offset:4px}

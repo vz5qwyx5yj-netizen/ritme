@@ -1,20 +1,20 @@
 #!/bin/bash
-# Dubbelklik dit bestand om Ritme te uploaden naar GitHub Pages.
+# Dubbelklik om Ritme en Workout samen naar de bestaande GitHub Pages-site te uploaden.
+set -e
 cd "$(dirname "$0")" || exit 1
 
-echo "== Ritme uploaden =="
+echo "== Ritme en Workout uploaden =="
 
-# 1) Cache-versie in sw.js bumpen, zodat telefoons de nieuwste versie ophalen
-STAMP=$(date +%Y%m%d%H%M%S)
-sed -i '' "s/const CACHE = 'ritme-[^']*';/const CACHE = 'ritme-$STAMP';/" sw.js
-echo "Cache-versie -> ritme-$STAMP"
+# Publicatiebestanden bouwen; cacheversies volgen automatisch de bestandsinhoud.
+python3 build.py
+RELEASE_STAMP=$(date +%Y%m%d%H%M%S)
 
 # 2) Wijzigingen committen en pushen
 git add -A
 if git diff --cached --quiet; then
   echo "Geen wijzigingen om te uploaden."
 else
-  git commit -m "Update $STAMP" >/dev/null
+  git commit -m "Update Ritme en Workout $RELEASE_STAMP" >/dev/null
   echo "Commit gemaakt."
 fi
 
@@ -22,6 +22,7 @@ if git push origin main; then
   echo ""
   echo "Klaar! Over ~1 minuut live op:"
   echo "  https://vz5qwyx5yj-netizen.github.io/ritme/"
+  echo "  https://vz5qwyx5yj-netizen.github.io/ritme/Workout/"
 else
   echo ""
   echo "Push mislukt. Bestaat de repo 'ritme' al op GitHub en is 'origin' ingesteld?"

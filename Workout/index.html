@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#263e2c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Workout">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="Jouw core workout van 5 of 10 minuten, met oefeningen, uitleg en een timer.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="workout.css">
+  <title>Workout</title>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header"><a href="./" aria-label="Workout startpagina"><img src="icons/icon.svg" width="34" height="34" alt="">Workout</a><span>Jouw dagelijkse kracht</span></header>
+    <main id="view-workout" aria-label="Core workout"><div id="workout-root"></div></main>
+    <footer>Op jouw tempo. Eén oefening tegelijk.</footer>
+  </div>
+  <script src="workout.js"></script>
+  <script>
+    Workout.init();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(reg => reg.update()).catch(() => {});
+      let reloading = false;
+      let controlled = navigator.serviceWorker.controller?.scriptURL === new URL('sw.js', location.href).href;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!controlled) { controlled = true; return; }
+        if (reloading) return;
+        reloading = true;
+        location.reload();
+      });
+    }
+  </script>
+</body>
+</html>
