@@ -1,5 +1,5 @@
-const CACHE = 'workout-a92e2b80031ba5eb';
-const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./app.css", "./workout.js", "./workout.css", "./icons/icon.svg", "./assets/workout/hollow.png", "./assets/workout/pullup.png", "./assets/workout/crunch.png", "./assets/workout/handstand.png", "./assets/workout/taps-front.png"];
+const CACHE = 'workout-a42657802b63bc3f';
+const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./app.css", "./workout.js", "./workout.css", "./icons/icon.svg", "./assets/workout/hollow.png", "./assets/workout/pullup.png", "./assets/workout/crunch.png", "./assets/workout/handstand.png", "./assets/workout/taps-front.png", "./assets/workout/plank.png", "./assets/workout/side-plank.png", "./assets/workout/bridge.png", "./assets/workout/bird-dog-pose.png"];
 const BASE = new URL('./', self.location.href);
 
 self.addEventListener('install', event => {

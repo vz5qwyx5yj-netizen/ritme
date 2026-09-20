@@ -195,6 +195,89 @@ def test_apps(browser, url, errors):
     context.close()
 
 
+def test_stability(browser, url, errors):
+    context = browser.new_context(viewport={'width': 390, 'height': 844}, service_workers='block')
+    page = context.new_page()
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.goto(url + 'Workout/')
+    # Existing sessions from before routine selection keep the original sequence.
+    legacy = {'id': 'before-routines', 'minutes': 5, 'index': 3, 'elapsed': 7, 'status': 'running'}
+    page.evaluate('(s)=>localStorage.setItem("workout.session.v1",JSON.stringify(s))', legacy)
+    page.reload()
+    expect(page.locator('.wk-player-body h2')).to_have_text('Optrekken aan de trap')
+    expect(page.locator('#wk-clock')).to_have_text('0:23')
+    expect(page.locator('#wk-stage-tag')).to_have_text('Gepauzeerd')
+    page.locator('[data-action="stop"]').click()
+    page.locator('[data-stop-confirm]').click()
+    page.locator('[data-routine="stability"]').click()
+    expect(page.locator('[data-routine="stability"]')).to_have_attribute('aria-pressed', 'true')
+    assert page.locator('[data-preview]').count() == 4
+    for exercise, name in [('plank', 'Plank'), ('side-plank', 'Side plank'), ('bridge', 'The Bridge'), ('bird-dog', 'Bird Dogs')]:
+        page.locator(f'[data-preview="{exercise}"]').click()
+        expect(page.locator('#wk-preview-title')).to_have_text(name)
+        assert page.locator('dialog[open] .wk-animate').count() == (0 if exercise == 'bird-dog' else 1)
+        assert page.evaluate('(id)=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalWidth>=1024&&img.naturalHeight>=1024);img.onerror=()=>resolve(false);img.src="assets/workout/"+id+".png"})', 'bird-dog-pose' if exercise == 'bird-dog' else exercise)
+        if exercise == 'side-plank':
+            expect(page.locator('dialog[open]')).to_contain_text('30 sec per kant')
+        if exercise == 'bird-dog':
+            expect(page.locator('dialog[open]')).to_contain_text('rechterarm naar voren en je linkerbeen')
+        page.locator('[data-close]').click()
+    page.screenshot(path=str(ARTIFACTS / 'core-stabiliteit-menu.png'), full_page=True)
+    for minutes in [5, 10]:
+        page.locator(f'[data-minutes="{minutes}"]').click()
+        page.clock.install()
+        page.locator('[data-action="start"]').click()
+        expect(page.locator('#wk-total')).to_have_text(f'{minutes}:00 over')
+        page.clock.run_for((30 if minutes == 5 else 60) * 1000)
+        for round_number in range(1, (2 if minutes == 10 else 1) + 1):
+            for title in ['Plank', 'Side plank · links', 'Side plank · rechts', 'The Bridge', 'Bird Dogs']:
+                expect(page.locator('.wk-player-body h2')).to_have_text(title)
+                expect(page.locator('#wk-stage-tag')).to_have_text(f'Ronde {round_number} van {2 if minutes == 10 else 1}')
+                expect(page.locator('#wk-clock')).to_have_text('0:30')
+                if title == 'Side plank · links':
+                    expect(page.locator('.wk-instruction')).to_contain_text('linkeronderarm')
+                if title == 'Side plank · rechts':
+                    expect(page.locator('.wk-instruction')).to_contain_text('rechteronderarm')
+                if minutes == 5 and title == 'The Bridge':
+                    page.locator('[data-action="pause"]').click()
+                    page.reload()
+                    expect(page.locator('.wk-player-body h2')).to_have_text('The Bridge')
+                    expect(page.locator('#wk-stage-tag')).to_have_text('Gepauzeerd')
+                    assert page.evaluate('JSON.parse(localStorage.getItem("workout.session.v1")).routine') == 'stability'
+                    page.clock.install()
+                    page.locator('[data-action="pause"]').click()
+                page.clock.run_for(30000)
+                expect(page.locator('#wk-stage-tag')).to_have_text('Rustmoment')
+                page.clock.run_for(20000)
+        expect(page.locator('.wk-player-body h2')).to_have_text('Rustig afronden')
+        page.clock.run_for((20 if minutes == 5 else 40) * 1000 - 1000)
+        expect(page.locator('#wk-clock')).to_have_text('0:01')
+        page.clock.run_for(1000)
+        expect(page.locator('.wk-complete')).to_contain_text('Core stabiliteit afgerond')
+        expect(page.locator('.wk-complete')).to_contain_text('4 oefeningen')
+        expect(page.locator('.wk-complete')).to_contain_text('Side plank aan beide kanten')
+        assert page.evaluate('localStorage.getItem("ritme.v1")') is None
+        page.reload()
+        expect(page.locator('.wk-complete')).to_be_visible()
+        page.locator('[data-action="new"]').click()
+        expect(page.locator('[data-routine="stability"]')).to_have_attribute('aria-pressed', 'true')
+    page.emulate_media(color_scheme='dark', reduced_motion='reduce')
+    for width in [320, 768, 1280]:
+        page.set_viewport_size({'width': width, 'height': 844})
+        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    page.locator('[data-preview="plank"]').click()
+    assert page.locator('dialog[open] .wk-animate').count() == 0
+    page.locator('[data-preview-motion]').click()
+    assert page.locator('dialog[open] .wk-motion-requested').count() == 1
+    page.locator('[data-close]').click()
+    # Invalid routine IDs must not break the player or start an unintended plan.
+    page.evaluate('(s)=>localStorage.setItem("workout.session.v1",JSON.stringify({...s,routine:"unknown"}))', legacy)
+    page.reload()
+    expect(page.locator('[data-action="start"]')).to_be_visible()
+    expect(page.locator('[data-routine="classic"]')).to_have_attribute('aria-pressed', 'true')
+    context.close()
+
+
 def test_offline(browser, url, errors):
     context = browser.new_context(viewport={'width': 390, 'height': 844})
     page = context.new_page()
@@ -218,6 +301,9 @@ def test_offline(browser, url, errors):
     context.set_offline(True)
     page.reload()
     expect(page).to_have_title('Workout')
+    page.locator('[data-routine="stability"]').click()
+    for exercise in ['plank', 'side-plank', 'bridge', 'bird-dog-pose']:
+        assert page.evaluate('(id)=>fetch("assets/workout/"+id+".png").then(r=>r.ok)', exercise)
     page.locator('[data-action="start"]').click()
     expect(page.locator('#wk-clock')).to_be_visible()
     assert page.evaluate('fetch("assets/workout/handstand.png").then(r=>r.ok)')
@@ -244,6 +330,8 @@ def main():
             print("Registraties, gewoontes en workouts controleren...", flush=True)
             test_apps(browser, url, errors)
             print("Registraties, gewoontes en workouts: PASS", flush=True)
+            test_stability(browser, url, errors)
+            print("Nieuwe oefeningen, beide kanten en beide sessieduren: PASS", flush=True)
             test_offline(browser, url, errors)
             print("Afzonderlijke offline apps: PASS", flush=True)
             # Installation identities and scopes must differ, keeping Ritme's old start URL.
