@@ -1,5 +1,5 @@
-const CACHE = 'ritme-paper-v3';
-const ASSETS = ["./", "./index.html", "./manifest.json", "./icons%202/icon-192.png", "./icons%202/icon-512.png", "./habits.js", "./storage.js", "./habits.css", "./assets/PatrickHand-Regular.ttf"];
+const CACHE = 'ritme-notebook-v4';
+const ASSETS = ["./", "./index.html", "./manifest.json", "./icons%202/ritme-notebook-180.png", "./icons%202/ritme-notebook-192.png", "./icons%202/ritme-notebook-512.png", "./habits.js", "./storage.js", "./habits.css", "./assets/PatrickHand-Regular.ttf"];
 const BASE = new URL('./', self.location.href);
 
 self.addEventListener('install', event => {
