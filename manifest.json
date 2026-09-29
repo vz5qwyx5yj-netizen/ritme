@@ -1,23 +1,23 @@
 {
   "name": "Ritme",
   "short_name": "Ritme",
-  "description": "Dagelijkse tracker voor slaap, groente, fruit, sport en je eigen gewoontes",
+  "description": "Een klein vinkje voor jezelf: je dagelijkse ritme en gewoontes.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1b1830",
-  "theme_color": "#1b1830",
+  "background_color": "#f6f0e5",
+  "theme_color": "#f6f0e5",
   "lang": "nl",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "icons%202/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icons%202/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

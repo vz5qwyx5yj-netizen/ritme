@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-TRACKER_FILES = ['index.html', 'habits.js', 'habits.css', 'manifest.json', 'sw.js', 'icons']
+TRACKER_FILES = ['index.html', 'habits.js', 'habits.css', 'storage.js', 'manifest.json', 'sw.js', 'icons 2', 'assets']
 WORKOUT_FILES = ['index.html', 'workout.js', 'workout.css', 'app.css', 'manifest.json', 'sw.js', 'icons', 'assets']
 
 

@@ -2,10 +2,10 @@
 
 De bronbestanden staan in twee appmappen:
 
-- **Ritme/**: slaap, groente, fruit, sport, diensten en eigen afvinkbare gewoontes. De knop op de Sport-kaart opent Workout.
+- **Ritme/**: slaap, groente, fruit, sport, diensten en eigen afvinkbare gewoontes. De link onder de dienstkeuze opent Workout.
 - **Workout/**: de bestaande core-oefeningen, bewegende voorbeelden en timer voor 5 of 10 minuten. Nieuwe oefeningen kunnen later in de code worden toegevoegd. Er is geen koppeling die sportminuten bijschrijft.
 
-Ritme bewaart bestaande gegevens onder dezelfde sleutel `ritme.v1`. Gewoontes zitten in dezelfde opslag en JSON-back-up. Elke gewoonte begint op de dag die bij toevoegen geselecteerd is; eerdere dagen tellen niet mee. Zowel oude back-ups als nieuwe back-ups met gewoontes kunnen worden hersteld. Herstellen vervangt de dagen met dezelfde datum, zoals voorheen.
+Ritme bewaart dagelijkse vinkjes onder `ritme.v2`. Vandaag, Gewoontes en Inzichten delen dezelfde doelen: minimaal 8 uur geslapen, groente gegeten, fruit gegeten, bewogen en eigen gewoontes. De nieuwe registratie begint leeg; bestaande gewoontes blijven behouden. Oude gegevens onder `ritme.v1` worden ongewijzigd gearchiveerd en blijven onderdeel van iedere JSON-back-up. Oude back-ups worden als archief geïmporteerd. Nieuwe back-ups herstellen vinkjes, gewoontes en startdatum en archiveren eerst het huidige schrift.
 
 Workout heeft een eigen manifest, icoon, offline cache en sessieopslag (`workout.session.v1`). Een onderbroken sessie wordt gepauzeerd hersteld. Beide apps bewaren hun gegevens lokaal op het apparaat.
 
@@ -39,7 +39,8 @@ Een lokale build publiceert niets. Een kopie op een ander domein heeft geen toeg
 Met Python Playwright en Google Chrome geïnstalleerd:
 
 ```sh
-python3 tests/gezondheid_browser.py
+python3 Ritme/tests/journal_check.py
+python3 tests/workout_browser.py
 ```
 
-De test start zelf een lokale server. Hij controleert bestaande gegevens, gewoontes per dag, back-ups, beide volledige workouts, pauzeren en hervatten, aparte installatiegegevens, kleine/grote schermen en offline gebruik van beide apps.
+De controles starten een lokale server. Ritme controleert migratie en archief, vinkjes, statistieken, back-ups, kleine/grote schermen en offlinegebruik. Workout heeft een eigen browsercontrole.
