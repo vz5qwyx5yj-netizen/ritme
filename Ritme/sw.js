@@ -1,4 +1,4 @@
-const CACHE = 'ritme-notebook-v4';
+const CACHE = 'ritme-goals-v5';
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icons%202/ritme-notebook-180.png", "./icons%202/ritme-notebook-192.png", "./icons%202/ritme-notebook-512.png", "./habits.js", "./storage.js", "./habits.css", "./assets/PatrickHand-Regular.ttf"];
 const BASE = new URL('./', self.location.href);
 

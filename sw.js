@@ -1,4 +1,4 @@
-const CACHE = 'ritme-286beb6124b7e6a7';
+const CACHE = 'ritme-c862fa2c22aadc2b';
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icons%202/ritme-notebook-180.png", "./icons%202/ritme-notebook-192.png", "./icons%202/ritme-notebook-512.png", "./habits.js", "./storage.js", "./habits.css", "./assets/PatrickHand-Regular.ttf"];
 const BASE = new URL('./', self.location.href);
 

@@ -5,7 +5,9 @@ De bronbestanden staan in twee appmappen:
 - **Ritme/**: slaap, groente, fruit, sport, diensten en eigen afvinkbare gewoontes. De link onder de dienstkeuze opent Workout.
 - **Workout/**: de bestaande core-oefeningen, bewegende voorbeelden en timer voor 5 of 10 minuten. Nieuwe oefeningen kunnen later in de code worden toegevoegd. Er is geen koppeling die sportminuten bijschrijft.
 
-Ritme bewaart dagelijkse vinkjes onder `ritme.v2`. Vandaag, Gewoontes en Inzichten delen dezelfde doelen: minimaal 8 uur geslapen, groente gegeten, fruit gegeten, bewogen en eigen gewoontes. De nieuwe registratie begint leeg; bestaande gewoontes blijven behouden. Oude gegevens onder `ritme.v1` worden ongewijzigd gearchiveerd en blijven onderdeel van iedere JSON-back-up. Oude back-ups worden als archief geïmporteerd. Nieuwe back-ups herstellen vinkjes, gewoontes en startdatum en archiveren eerst het huidige schrift.
+Ritme bewaart dagelijkse vinkjes en een beheerbare doelenlijst onder `ritme.v3`. Vandaag, Gewoontes en Inzichten gebruiken dezelfde doelen. Alle doelen, ook de oorspronkelijke vier standaarddoelen, kunnen worden verwijderd. De plusknop biedt dertien suggesties en eigen doelen met een zelfgekozen pictogram. Doelen beginnen op de dag van toevoegen. Verwijderen wist na bevestiging ook alle bijbehorende vinkjes uit eerdere dagen; back-uparchieven blijven intact.
+
+De omzetting van `ritme.v2` behoudt vinkjes, gewoontes, startdatums, diensten en archieven. Versie-2-back-ups worden bij herstel omgezet; versie-3-back-ups herstellen ook pictogrammen en kleuren. Oude `ritme.v1`-gegevens blijven als archief bewaard. Voor herstel wordt het huidige schrift in het back-uparchief opgeslagen.
 
 Workout heeft een eigen manifest, icoon, offline cache en sessieopslag (`workout.session.v1`). Een onderbroken sessie wordt gepauzeerd hersteld. Beide apps bewaren hun gegevens lokaal op het apparaat.
 
@@ -40,6 +42,7 @@ Met Python Playwright en Google Chrome geïnstalleerd:
 
 ```sh
 python3 Ritme/tests/journal_check.py
+python3 Ritme/tests/goals_check.py
 python3 tests/workout_browser.py
 ```
 

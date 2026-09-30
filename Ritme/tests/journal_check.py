@@ -1,5 +1,6 @@
 """Browser regression: PYTHONPATH=/tmp/ritme-test-deps python3 tests/journal_check.py"""
 import datetime
+import os
 import functools
 import http.server
 import json
@@ -7,7 +8,7 @@ import threading
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-ROOT = str(Path(__file__).resolve().parents[1])
+ROOT = os.environ.get("RITME_TEST_ROOT", str(Path(__file__).resolve().parents[1]))
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args): pass
 server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(QuietHandler, directory=ROOT))
@@ -26,11 +27,11 @@ with sync_playwright() as p:
     page.goto(url)
     page.evaluate('(v) => {localStorage.clear();localStorage.setItem("ritme.v1",JSON.stringify(v))}', seed)
     page.reload()
-    state = lambda: page.evaluate('JSON.parse(localStorage.getItem("ritme.v2"))')
+    state = lambda: page.evaluate('JSON.parse(localStorage.getItem("ritme.v3"))')
     migrated = state()
     assert migrated['entries'] == {} and migrated['startDate'] == '2026-09-29'
     assert json.loads(migrated['archives'][0]['raw']) == seed
-    assert len(migrated['habits']) == 1
+    assert len(migrated['goals']) == 5
     page.reload()
     assert state() == migrated
     assert page.locator('.daily-row').count() == 5
@@ -54,9 +55,10 @@ with sync_playwright() as p:
     assert 'Opslaan lukt niet' in page.locator('#toast').inner_text()
     page.evaluate('() => {Storage.prototype.setItem=window.originalSetItem}')
     page.locator('#add-habit').click()
+    page.locator('#custom-goal').click()
     page.locator('#habit-name').fill('Naar buiten gaan')
     page.locator('#habit-form button[type="submit"]').click()
-    assert state()['habits'][-1]['startDate'] == '2026-09-29'
+    assert state()['goals'][-1]['startDate'] == '2026-09-29'
     page.locator('[data-view="gewoontes"]').click()
     assert page.locator('.journal-table thead th').count() == 8
     assert page.locator('[data-date="2026-09-28"][data-habit="slaap"]').is_disabled()
@@ -68,7 +70,7 @@ with sync_playwright() as p:
     for date, mode, count, first, last in [('2024-02-15','month',29,'2024-02-01','2024-02-29'),('2026-01-01','week',7,'2025-12-29','2026-01-04')]:
         dates = page.evaluate('([d,m])=>RitmeStore.periodDates(d,m)', [date,mode])
         assert (len(dates),dates[0],dates[-1]) == (count,first,last)
-    result=page.evaluate('''() => RitmeStore.stats({startDate:'2026-09-28',habits:[{id:'h-new',name:'Nieuw',startDate:'2026-09-29'}],entries:{'2026-09-28':{checks:{slaap:true}},'2026-09-29':{checks:{'h-new':true}}}},RitmeStore.periodDates('2026-09-29','week'))''')
+    result=page.evaluate('''() => RitmeStore.stats(RitmeStore.migrateV2({version:2,archives:[],startDate:'2026-09-28',habits:[{id:'h-new',name:'Nieuw',startDate:'2026-09-29'}],entries:{'2026-09-28':{checks:{slaap:true},dienst:''},'2026-09-29':{checks:{'h-new':true},dienst:''}}}),RitmeStore.periodDates('2026-09-29','week'))''')
     assert result['total'] == 9 and result['done'] == 2 and result['percent'] == 22
     # Back-up round trip and archived legacy import.
     page.locator('[data-view="inzichten"]').click()
@@ -79,11 +81,11 @@ with sync_playwright() as p:
     def import_file(value):
         page.locator('#import-file').set_input_files({'name':'backup.json','mimeType':'application/json','buffer':json.dumps(value).encode()})
     import_file(exported)
-    page.wait_for_function('JSON.parse(localStorage.getItem("ritme.v2")).archives.length===2')
+    page.wait_for_function('JSON.parse(localStorage.getItem("ritme.v3")).archives.length===2')
     assert state()['entries']==exported['entries']
     different={'entries':{'2020-01-01':{'slaap':6}},'habits':[]}
     import_file(different)
-    page.wait_for_function('JSON.parse(localStorage.getItem("ritme.v2")).archives.length===3')
+    page.wait_for_function('JSON.parse(localStorage.getItem("ritme.v3")).archives.length===3')
     assert state()['entries']==exported['entries']
     before=state()
     import_file({'version':2,'entries':{}})
