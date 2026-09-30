@@ -1,0 +1,70 @@
+{
+  "tool": "built-in image_gen",
+  "layout": "single square static pose",
+  "prompts": [
+    {
+      "name": "padel-squat",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Squat, three-quarter side view, hips lowered back, both feet flat shoulder width, knees tracking toes, arms forward."
+    },
+    {
+      "name": "padel-reverse-lunge",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Reverse lunge, side view, front foot flat and knee bent, rear knee hovering above mat, upright trunk."
+    },
+    {
+      "name": "padel-side-lunge",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Lateral lunge, front view, wide stance, one knee bent with hips back, other leg extended sideways, both feet flat."
+    },
+    {
+      "name": "padel-bridge",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Glute bridge, side view, lying supine shoulders and head on mat, knees bent, feet flat, hips raised until shoulders hips knees align, arms alongside body."
+    },
+    {
+      "name": "padel-calf-raise",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Single leg calf raise, full side view, standing tall on ball of ONE foot heel lifted, other foot off ground knee bent, fingertips on solid garden wall for balance."
+    },
+    {
+      "name": "padel-push-up",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Push up at halfway lowered position, side view, palms and toes on mat, elbows bent back, rigid straight line head hips heels."
+    },
+    {
+      "name": "padel-taps",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: High plank shoulder tap, front three-quarter view, feet wide, one palm planted directly beneath shoulder, opposite hand touches the supporting arm shoulder across chest. Hips level."
+    },
+    {
+      "name": "padel-skater",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Skater jump landing pose, front view, balance on one flexed leg, other leg lifted crossed behind, torso slightly forward, arms balance."
+    },
+    {
+      "name": "padel-hip-flexor",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Half kneeling hip flexor stretch, side view, rear knee on mat directly below hip, front foot flat knee bent 90 degrees, upright torso pelvis slightly tucked, gentle hip shift forward."
+    },
+    {
+      "name": "padel-adductor",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Adductor rock back stretch, three-quarter front view, both hands planted on mat, one knee kneeling beneath hip, opposite leg extended straight sideways foot flat, hips slightly back."
+    },
+    {
+      "name": "padel-hip-9090",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Seated 90/90 hip stretch, elevated front three-quarter view, sitting upright on mat, front leg bent 90 degrees externally rotated and rear leg bent 90 degrees internally rotated to side, both knees low, hands support beside hips. Exactly two legs, show both feet."
+    },
+    {
+      "name": "padel-ankle",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Half kneeling ankle mobility, side view, back knee on mat, front foot completely flat heel firmly down, front knee travels forward over toes, torso gently leaning forward."
+    },
+    {
+      "name": "padel-calf-stretch",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Standing calf stretch at solid garden wall, side view, both palms on wall, front knee bent, rear leg straight with rear heel firmly grounded, toes toward wall."
+    },
+    {
+      "name": "padel-open-book",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Open book thoracic rotation stretch, elevated three-quarter view, lying on side on mat with BOTH knees bent stacked together on ground, lower arm extended forward on ground, upper arm opens backward and chest rotates toward sky. Head supported naturally."
+    },
+    {
+      "name": "padel-chest-stretch",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Standing single arm chest stretch beside solid garden wall, three-quarter view, one forearm against wall elbow bent 90 degrees at shoulder height, torso rotated gently away from that arm."
+    },
+    {
+      "name": "padel-lat-stretch",
+      "prompt": "Create ONE square 1024x1024 still exercise illustration for a Dutch workout app, NOT a sprite sheet. Match this visual style: premium hand drawn graphic novel, fine dark ink contours and textured cel shading, sunlit leafy Mediterranean garden, sage-green horizontal timber fence, mustard-yellow exercise mat on grass. Athletic adult man, short dark brown hair, light stubble, warm light skin, bare torso, charcoal shorts, barefoot. Anatomically correct two arms and two legs. Entire body and all supports fully visible with 12% margin; person large and readable. No text, labels, logos, border, watermark or arrows. Exercise to depict: Standing lat stretch with sturdy waist-height garden bench, side view, both palms on bench, arms long, hips hinged back, knees slightly soft, back long nearly horizontal, chest lowered toward ground between arms."
+    }
+  ]
+}

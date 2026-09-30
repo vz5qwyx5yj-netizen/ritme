@@ -3,13 +3,13 @@
 De bronbestanden staan in twee appmappen:
 
 - **Ritme/**: slaap, groente, fruit, sport, diensten en eigen afvinkbare gewoontes. De link onder de dienstkeuze opent Workout.
-- **Workout/**: de bestaande core-oefeningen, bewegende voorbeelden en timer voor 5 of 10 minuten. Nieuwe oefeningen kunnen later in de code worden toegevoegd. Er is geen koppeling die sportminuten bijschrijft.
+- **Workout/**: Core kracht en Core stabiliteit (5 of 10 minuten), Padel kracht (10 of 20 minuten) en Padel stretch (10:10 of 20:20 minuten). Elke padelworkout bevat acht oefeningen met stilstaande illustraties, Nederlandse uitleg en een lichtere variant. Er is geen koppeling die sportminuten bijschrijft.
 
 Ritme bewaart dagelijkse vinkjes en een beheerbare doelenlijst onder `ritme.v3`. Vandaag, Gewoontes en Inzichten gebruiken dezelfde doelen. Alle doelen, ook de oorspronkelijke vier standaarddoelen, kunnen worden verwijderd. De plusknop biedt dertien suggesties en eigen doelen met een zelfgekozen pictogram. Doelen beginnen op de dag van toevoegen. Verwijderen wist na bevestiging ook alle bijbehorende vinkjes uit eerdere dagen; back-uparchieven blijven intact.
 
 De omzetting van `ritme.v2` behoudt vinkjes, gewoontes, startdatums, diensten en archieven. Versie-2-back-ups worden bij herstel omgezet; versie-3-back-ups herstellen ook pictogrammen en kleuren. Oude `ritme.v1`-gegevens blijven als archief bewaard. Voor herstel wordt het huidige schrift in het back-uparchief opgeslagen.
 
-Workout heeft een eigen manifest, icoon, offline cache en sessieopslag (`workout.session.v1`). Een onderbroken sessie wordt gepauzeerd hersteld. Beide apps bewaren hun gegevens lokaal op het apparaat.
+Workout heeft een eigen manifest, icoon, offline cache en sessieopslag (`workout.session.v1`). Een onderbroken sessie wordt gepauzeerd hersteld, inclusief routine en rondekeuze; oude core-sessies blijven herstelbaar. Padel biedt één of twee rondes, standaard één. Kracht gebruikt 30 seconden per oefening/kant en 20 seconden rust; stretch gebruikt 30 seconden en 10 seconden wisseltijd. Eén ronde bevat 30 seconden voorbereiding en 20 seconden afronding; twee rondes respectievelijk 60 en 40 seconden. Reverse lunge, side lunge en calf raise krijgen eigen beurten per kant. Bij stretch geldt dat voor alle oefeningen behalve 90/90 (afwisselen) en lat stretch (samen). Beide apps bewaren hun gegevens lokaal op het apparaat.
 
 ## Lokaal bekijken
 
@@ -46,4 +46,4 @@ python3 Ritme/tests/goals_check.py
 python3 tests/workout_browser.py
 ```
 
-De controles starten een lokale server. Ritme controleert migratie en archief, vinkjes, statistieken, back-ups, kleine/grote schermen en offlinegebruik. Workout heeft een eigen browsercontrole.
+De controles starten een lokale server. Ritme controleert migratie en archief, vinkjes, statistieken, back-ups, kleine/grote schermen en offlinegebruik. Workout controleert de vier routines, exacte tijden, beide kanten, pauzeren/herladen, oude sessies, illustraties, mobiel/desktop en offlinegebruik. De zestien padelillustraties zijn gemaakt met de ingebouwde image_gen-tool en staan in `Workout/assets/workout/padel-*.png`; de gebruikte prompts staan in `Workout/assets/workout/padel-art-prompts.json`.

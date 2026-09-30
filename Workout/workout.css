@@ -33,3 +33,7 @@
 @media(min-width:600px){.wk-hero{aspect-ratio:1.15}.wk-scene .wk-sprite{max-height:460px}.wk-actionbar{position:sticky;bottom:0}}
 @media(max-width:360px){.wk-content,.wk-player-body{padding-left:15px;padding-right:15px}.wk-clock{font-size:59px}.wk-player-body h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.wk-animate:not(.wk-motion-requested){animation:none}}
+
+/* Exact minute/second labels need room below the selection marker on small screens. */
+.wk-duration-exact{padding-top:36px}.wk-duration-exact b{display:block;white-space:nowrap;font-size:30px}.wk-duration-exact b small{display:block;font-size:11px;line-height:1.5;margin-top:5px}
+.wk-scene .wk-still + .wk-scene-label{position:static;display:block;border-radius:0}
